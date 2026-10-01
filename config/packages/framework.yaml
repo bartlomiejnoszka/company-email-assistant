@@ -1,0 +1,18 @@
+framework:
+  trusted_proxies: '%env(TRUSTED_PROXIES)%'
+  trusted_headers: ['x-forwarded-for', 'x-forwarded-proto', 'x-forwarded-port']
+  secret: '%env(APP_SECRET)%'
+  default_locale: en
+  translator:
+    default_path: '%kernel.project_dir%/translations'
+    fallbacks: [en]
+  csrf_protection: true
+  session:
+    cookie_secure: auto
+    cookie_httponly: true
+    cookie_samesite: lax
+    storage_factory_id: session.storage.factory.native
+  http_method_override: false
+  handle_all_throwables: true
+  php_errors:
+    log: true

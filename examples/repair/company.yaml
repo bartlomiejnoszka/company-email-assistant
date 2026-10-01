@@ -1,0 +1,21 @@
+schema_version: 1
+company:
+  name: 'Example Repair Workshop'
+  sender_address: contact@repair.example.test
+  reply_language: en
+  signature: 'Example Repair Workshop'
+  contact: {  }
+  timezone: UTC
+reply:
+  tone: Professional
+  greeting: 'Hello,'
+  closing: 'Kind regards,'
+  excluded_terms: []
+  manual_terms:
+    - dispute
+    - spór
+  matching: keywords
+  editing:
+    mode: literal
+    style:
+      length: standard

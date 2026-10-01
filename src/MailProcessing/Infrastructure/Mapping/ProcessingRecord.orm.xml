@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping">
+  <entity name="App\MailProcessing\Domain\ProcessingRecord" table="processing_record">
+    <unique-constraints><unique-constraint name="source_identity" columns="mailbox,uid_validity,source_uid"/></unique-constraints>
+    <id name="id" type="string" length="64"><generator strategy="NONE"/></id>
+    <field name="mailbox" type="string" column="mailbox" length="64"/>
+    <field name="uidValidity" type="string" column="uid_validity" length="32"/>
+    <field name="sourceUid" type="integer" column="source_uid"/>
+    <field name="sourceMessageId" type="string" column="source_message_id" length="255" nullable="true"/>
+    <field name="status" type="string" column="status" length="32"/>
+    <field name="attempts" type="integer" column="attempts"/>
+    <field name="draftMessageId" type="string" column="draft_message_id" length="255" nullable="true"/>
+    <field name="draftUid" type="string" column="draft_uid" length="32" nullable="true"/>
+    <field name="configHash" type="string" column="config_hash" length="64"/>
+    <field name="selectedIds" type="json" column="selected_ids"/>
+    <field name="reason" type="string" column="reason" length="80" nullable="true"/>
+    <field name="error" type="string" column="error" length="160" nullable="true"/>
+    <field name="flagPending" type="boolean" column="flag_pending"/>
+    <field name="createdAt" type="datetime_immutable" column="created_at"/>
+    <field name="updatedAt" type="datetime_immutable" column="updated_at"/>
+  </entity>
+</doctrine-mapping>

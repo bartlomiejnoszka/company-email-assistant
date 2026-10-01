@@ -1,0 +1,34 @@
+services:
+  panel:
+    build: { context: .., dockerfile: deploy/Dockerfile, target: panel }
+    env_file: ../.env.local
+    environment:
+      APP_ENV: prod
+      APP_DEBUG: '0'
+      COMPANY_CONFIG_DIR: /company
+      MCP_AUTH_DIR: /identity
+      DATABASE_URL: sqlite:////app/var/state.sqlite
+    volumes:
+      - ../var/company:/company
+      - ../var/identity:/identity
+      - ../var/runtime:/app/var
+    restart: unless-stopped
+  web:
+    build: { context: .., dockerfile: deploy/Dockerfile, target: web }
+    ports: ['127.0.0.1:8088:8080']
+    depends_on: [panel]
+    restart: unless-stopped
+  cli:
+    build: { context: .., dockerfile: deploy/Dockerfile, target: cli }
+    profiles: [tools]
+    env_file: ../.env.local
+    environment:
+      APP_ENV: prod
+      APP_DEBUG: '0'
+      COMPANY_CONFIG_DIR: /company
+      MCP_AUTH_DIR: /identity
+      DATABASE_URL: sqlite:////app/var/state.sqlite
+    volumes:
+      - ../var/company:/company
+      - ../var/identity:/identity
+      - ../var/runtime:/app/var

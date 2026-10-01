@@ -1,0 +1,22 @@
+security:
+  providers:
+    owner:
+      id: App\Identity\Infrastructure\OwnerProvider
+  firewalls:
+    mcp:
+      pattern: ^/mcp$
+      stateless: true
+      custom_authenticators: [App\Identity\Infrastructure\OAuth\McpAuthenticator]
+    owner:
+      lazy: true
+      provider: owner
+      custom_authenticators: [App\Identity\Infrastructure\OwnerAuthenticator]
+      logout:
+        path: owner_logout
+        target: owner_login
+        enable_csrf: true
+  access_control:
+    - { path: ^/mcp$, roles: ROLE_CONFIG_READ }
+    - { path: ^/(login|oauth(?:/|$)|\.well-known(?:/|$)), roles: PUBLIC_ACCESS }
+    - { path: ^/assets/, roles: PUBLIC_ACCESS }
+    - { path: ^/, roles: ROLE_OWNER }

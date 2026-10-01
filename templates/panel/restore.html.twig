@@ -1,0 +1,7 @@
+{% extends 'panel/base.html.twig' %}
+{% block body %}
+<div class="max-w-2xl"><p class="eyebrow">{{ 'Version history'|trans }}</p><h1>{{ 'Restore previous version'|trans }}</h1><p class="mt-4 leading-7">{{ 'Restore all three files from the previous version. Current edits remain in history.'|trans }}</p>
+{% if error %}<div role="alert" class="notice mt-6 border-red-200 bg-red-50 text-red-900">{{ error|trans }}</div>{% endif %}
+{% if snapshot.previous %}<form method="post" class="mt-8 flex flex-wrap gap-4"><input type="hidden" name="_token" value="{{ token }}"><input type="hidden" name="version" value="{{ snapshot.version }}"><button class="button">{{ 'Yes, restore the previous version'|trans }}</button><a class="help-link p-3" href="{{ path('panel_config') }}">{{ 'Cancel'|trans }}</a></form>{% else %}<p class="mt-6">{{ 'No previous version is available.'|trans }}</p>{% endif %}
+</div>
+{% endblock %}

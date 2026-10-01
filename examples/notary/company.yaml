@@ -1,0 +1,21 @@
+schema_version: 1
+company:
+  name: 'Example Notary'
+  sender_address: contact@notary.example.test
+  reply_language: pl
+  signature: 'Example Notary'
+  contact: {  }
+  timezone: Europe/Warsaw
+reply:
+  tone: Professional
+  greeting: 'Dzień dobry,'
+  closing: 'Z poważaniem,'
+  excluded_terms: []
+  manual_terms:
+    - dispute
+    - spór
+  matching: ai
+  editing:
+    mode: literal
+    style:
+      length: standard

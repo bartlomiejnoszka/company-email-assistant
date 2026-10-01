@@ -1,0 +1,11 @@
+topics:
+  repair:
+    terms:
+      - repair
+      - device
+facts:
+  repair.checklist:
+    text: 'Please bring the device and its purchase receipt.'
+    topics:
+      - repair
+clarifications: {  }

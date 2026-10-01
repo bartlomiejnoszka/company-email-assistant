@@ -1,0 +1,11 @@
+topics:
+  kontakt:
+    terms:
+      - kontakt
+      - dokumenty
+facts:
+  sprawa.kontakt.fact:
+    text: 'Prosimy o kontakt w celu ustalenia zakresu sprawy.'
+    topics:
+      - kontakt
+clarifications: {  }

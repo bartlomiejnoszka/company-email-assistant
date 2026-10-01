@@ -1,0 +1,30 @@
+{% extends 'panel/base.html.twig' %}
+{% block body %}
+  <div class="mb-8 flex flex-wrap items-end justify-between gap-5">
+    <div class="max-w-3xl"><p class="eyebrow">{{ 'Knowledge and reply preferences'|trans }}</p><h1>{{ 'Company configuration'|trans }}</h1><p class="mt-3 text-base leading-7 text-slate-600">{{ 'Three files, one complete package. Edit approved content and save all files together.'|trans }}</p></div>
+    <span class="rounded-lg border border-stone-200 bg-white px-3 py-2 text-xs text-slate-500">{{ 'Active version'|trans }} <code class="font-mono break-all">{{ snapshot.version }}</code></span>
+  </div>
+  {% if saved %}<div role="status" class="notice mb-6 border-teal-200 bg-teal-50 text-teal-950">{{ 'Configuration saved. Future runs will use this version.'|trans }}</div>{% endif %}
+  {% if error %}<div role="alert" class="notice mb-6 border-red-200 bg-red-50 text-red-900"><strong>{{ 'Configuration was not saved.'|trans }}</strong><p class="mt-1 break-words">{{ error|trans }}</p><a href="{{ path('panel_config') }}" class="mt-2 inline-block underline">{{ 'Reload the active version'|trans }}</a> — {{ 'Copy your edits first.'|trans }}</div>{% endif %}
+  <div class="grid gap-8 lg:grid-cols-[210px_minmax(0,1fr)]">
+    <aside class="self-start rounded-2xl border border-stone-200 bg-white p-5 lg:sticky lg:top-6"><p class="eyebrow">{{ 'In this package'|trans }}</p><nav aria-label="{{ 'Editor sections'|trans }}" class="flex flex-wrap gap-3 lg:flex-col"><a class="help-link" href="#company">{{ 'Company'|trans }}</a><a class="help-link" href="#knowledge">{{ 'Knowledge'|trans }}</a><a class="help-link" href="#pricing">{{ 'Pricing'|trans }}</a></nav><p class="mt-6 text-sm leading-6 text-slate-500">{{ 'Use only approved facts and prices. Uncertain enquiries require staff review.'|trans }}</p></aside>
+    <form method="post" action="{{ path('panel_config') }}" class="min-w-0">
+      <input type="hidden" name="_token" value="{{ token }}"><input type="hidden" name="version" value="{{ snapshot.version }}">
+      {% set fields = [
+        {name: 'office', file: 'company.yaml', title: 'Company', help: 'Identity, contact details, signature, language and reply preferences.', anchor: 'company', rows: 20},
+        {name: 'cases', file: 'knowledge.yaml', title: 'Knowledge', help: 'Topics, approved answers and questions about missing information.', anchor: 'knowledge', rows: 24},
+        {name: 'prices', file: 'pricing.yaml', title: 'Pricing', help: 'Approved prices and their full conditions. Keep prices empty until approved.', anchor: 'pricing', rows: 12}
+      ] %}
+      {% for field in fields %}
+        <section id="{{ field.anchor }}" class="mb-6 overflow-hidden rounded-2xl border border-stone-200 bg-white shadow-sm">
+          <div class="flex flex-wrap items-start justify-between gap-3 border-b border-stone-200 px-5 py-5 sm:px-6"><div><label for="{{ field.name }}" class="text-lg font-semibold text-slate-950">{{ loop.index }}. {{ field.title|trans }}</label><p id="{{ field.name }}-help" class="mt-1 text-sm leading-6 text-slate-500">{{ field.help|trans }}</p></div><a class="help-link" href="{{ path('panel_guide') }}#{{ field.anchor }}">{{ 'Editing guide'|trans }} ↗</a></div>
+          <div class="border-b border-stone-100 bg-stone-50 px-5 py-2 font-mono text-xs text-slate-500 sm:px-6">{{ field.file }}</div>
+          <textarea id="{{ field.name }}" name="{{ field.name }}" rows="{{ field.rows }}" spellcheck="false" autocapitalize="off" autocomplete="off" aria-describedby="{{ field.name }}-help" class="yaml-editor">
+{{ snapshot.files[field.file] }}</textarea>
+        </section>
+      {% endfor %}
+      <div class="flex flex-wrap items-center justify-between gap-5 rounded-2xl border border-stone-200 bg-white p-5 sm:p-6"><p class="max-w-lg text-sm leading-6 text-slate-500">{{ 'All files are validated before activation. Invalid changes leave the active version intact.'|trans }}</p><button type="submit" class="button">{{ 'Save configuration'|trans }} <span aria-hidden="true">→</span></button></div>
+      {% if snapshot.previous %}<div class="mt-6"><a class="help-link" href="{{ path('panel_restore') }}">{{ 'Restore previous version'|trans }}</a></div>{% endif %}
+    </form>
+  </div>
+{% endblock %}

@@ -1,0 +1,21 @@
+/vendor/
+/var/
+/.env.local
+/.env.*.local
+/.phpunit.cache/
+/.codex-artifacts/
+/config/reference.php
+
+# Local OS files, credentials and backups
+.DS_Store
+._*
+*.pem
+*.key
+/secrets.env
+/backups/
+
+/node_modules/
+
+/.idea/
+/dist/
+/.php-cs-fixer.cache

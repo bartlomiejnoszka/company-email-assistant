@@ -1,0 +1,112 @@
+services:
+  _defaults:
+    autowire: true
+    autoconfigure: true
+  App\MailProcessing\Application\ProcessMailbox:
+    arguments:
+      $startAt: '%env(EMAIL_START_AT)%'
+      $autoReply: '@App\MailProcessing\Domain\TestAutoReply'
+      $sender: '@App\MailProcessing\Application\Port\ReplySender'
+  App\Configuration\Infrastructure\ConfigLoader:
+    arguments:
+      $directory: '%env(resolve:COMPANY_CONFIG_DIR)%'
+  App\MailProcessing\Infrastructure\ImapMailbox:
+    arguments:
+      $host: '%env(IMAP_HOST)%'
+      $port: '%env(int:IMAP_PORT)%'
+      $username: '%env(IMAP_USERNAME)%'
+      $password: '%env(IMAP_PASSWORD)%'
+      $drafts: '%env(IMAP_DRAFTS_FOLDER)%'
+      $inbox: '%env(IMAP_INBOX_FOLDER)%'
+  App\MailProcessing\Application\Port\Mailbox: '@App\MailProcessing\Infrastructure\ImapMailbox'
+  App\Reply\Infrastructure\OpenAiDraftAi:
+    arguments:
+      $apiKey: '%env(OPENAI_API_KEY)%'
+      $model: '%env(OPENAI_MODEL)%'
+  App\Reply\Application\Port\DraftAi: '@App\Reply\Infrastructure\OpenAiDraftAi'
+  App\MailProcessing\Infrastructure\TextExtractor: ~
+  App\MailProcessing\Infrastructure\ReplyComposer: ~
+  App\Reply\Domain\FactSelector: ~
+  App\Reply\Domain\ProposalValidator: ~
+  App\Reply\Domain\ReplyRenderer: ~
+  App\MailProcessing\Infrastructure\StateStore: ~
+
+  App\MailProcessing\Domain\TestAutoReply:
+    arguments:
+      $enabled: '%env(bool:EMAIL_TEST_AUTO_SEND)%'
+      $allowlist: '%env(json:EMAIL_AUTO_SEND_ALLOWLIST)%'
+  App\MailProcessing\Infrastructure\SmtpReplySender:
+    arguments:
+      $dsn: '%env(SMTP_DSN)%'
+  App\MailProcessing\Application\Port\ReplySender: '@App\MailProcessing\Infrastructure\SmtpReplySender'
+
+  App\Configuration\Application\Port\ConfigProvider: '@App\Configuration\Infrastructure\ConfigLoader'
+
+  App\Configuration\Infrastructure\ConfigSnapshotStore:
+    arguments:
+      $directory: '%env(resolve:COMPANY_CONFIG_DIR)%'
+  App\Interface\Http\ConfigController:
+    tags: ['controller.service_arguments']
+    arguments:
+      $docsDirectory: '%kernel.project_dir%/docs/panel'
+
+  App\Interface\Mcp\ConfigurationGuidance:
+    arguments:
+      $docsDirectory: '%kernel.project_dir%/docs/panel'
+  App\Interface\Mcp\ConfigurationTools: ~
+
+  App\Identity\Infrastructure\OAuth\Settings:
+    arguments:
+      $directory: '%env(resolve:MCP_AUTH_DIR)%'
+      $baseUrl: '%env(MCP_BASE_URL)%'
+  App\Identity\Infrastructure\OAuth\Repository: ~
+  App\Identity\Infrastructure\OAuth\ServerFactory: ~
+  App\Identity\Infrastructure\OAuth\McpAuthenticator: ~
+  App\Interface\Http\OAuthController:
+    tags: ['controller.service_arguments']
+  App\Interface\Console\ConfigureMcpCommand: ~
+  App\Interface\Console\RevokeMcpCommand: ~
+
+  App\Reply\Application\ResponseGenerator:
+    arguments:
+      $clock: '@App\Reply\Infrastructure\SystemClock'
+  preview.ai:
+    class: App\Reply\Infrastructure\OpenAiDraftAi
+    arguments:
+      $apiKey: '%env(OPENAI_API_KEY)%'
+      $model: '%env(OPENAI_MODEL)%'
+      $maxDuration: 20
+  preview.generator:
+    class: App\Reply\Application\ResponseGenerator
+    arguments:
+      $ai: '@preview.ai'
+      $clock: '@App\Reply\Infrastructure\SystemClock'
+  App\Interface\Mcp\MailResponseTools:
+    arguments:
+      $generator: '@preview.generator'
+      $lockDirectory: '%kernel.cache_dir%/../mcp-preview-locks'
+
+  App\Interface\Console\GenerateDraftsCommand: ~
+  App\MailProcessing\Application\Port\ProcessingState: '@App\MailProcessing\Infrastructure\StateStore'
+
+  App\Configuration\Application\Port\ConfigurationStorage: '@App\Configuration\Infrastructure\ConfigSnapshotStore'
+  App\Configuration\Application\ConfigurationManager: ~
+  App\Interface\Console\ImportLegacyCommand: ~
+
+  App\Identity\Infrastructure\OwnerProvider: ~
+  App\Identity\Infrastructure\OwnerAuthenticator: ~
+  App\Interface\Http\LoginController:
+    tags: ['controller.service_arguments']
+  App\Interface\Http\ResponseHeaders: ~
+
+  App\Interface\Http\CompanyBrand: ~
+  App\Interface\Http\LocaleListener:
+    arguments:
+      $locale: '%env(UI_LOCALE)%'
+
+  App\Reply\Infrastructure\SystemClock: ~
+
+  App\MailProcessing\Infrastructure\FlockRunLock: ~
+  App\MailProcessing\Application\Port\RunLock: '@App\MailProcessing\Infrastructure\FlockRunLock'
+  App\MailProcessing\Application\Port\MimeComposer: '@App\MailProcessing\Infrastructure\ReplyComposer'
+  App\MailProcessing\Application\Port\ContentExtractor: '@App\MailProcessing\Infrastructure\TextExtractor'

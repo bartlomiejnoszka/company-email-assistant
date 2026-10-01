@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping">
+  <entity name="App\MailProcessing\Domain\MailboxState" table="mailbox_state">
+    <id name="id" type="string" length="64"><generator strategy="NONE"/></id>
+    <field name="uidValidity" type="string" column="uid_validity" length="32"/>
+  </entity>
+</doctrine-mapping>

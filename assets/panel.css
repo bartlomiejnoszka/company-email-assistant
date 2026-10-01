@@ -1,0 +1,27 @@
+@import "tailwindcss" source(none);
+@source "../templates";
+@layer base {
+  h1 { @apply text-3xl font-semibold tracking-tight text-slate-950 sm:text-4xl; }
+  a, button, textarea { @apply focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-teal-700; }
+}
+@layer components {
+  .eyebrow { @apply mb-3 text-xs font-semibold uppercase tracking-widest text-teal-800; }
+  .button { @apply inline-flex cursor-pointer items-center justify-center gap-4 rounded-xl bg-teal-900 px-6 py-3 text-sm font-semibold text-white hover:bg-teal-800; }
+  .help-link { @apply font-medium text-teal-800 underline decoration-teal-200 underline-offset-4 hover:decoration-teal-800; }
+  .notice { @apply rounded-xl border px-5 py-4 text-sm leading-6; }
+  .yaml-editor { @apply block w-full resize-y border-0 bg-white p-5 font-mono text-sm leading-6 text-slate-800 focus:bg-teal-50/20 focus:outline-offset-[-2px] sm:p-6; tab-size: 2; white-space: pre; overflow-wrap: normal; overflow-x: auto; }
+  .documentation { @apply text-base leading-8 text-slate-700; overflow-wrap: anywhere; }
+  .documentation h1 { @apply mb-6; }
+  .documentation h2 { @apply mb-4 mt-10 border-t border-stone-200 pt-8 text-2xl font-semibold tracking-tight text-slate-950; }
+  .documentation h3 { @apply mb-3 mt-7 text-lg font-semibold text-slate-950; }
+  .documentation p { @apply my-4; }
+  .documentation a { @apply font-medium text-teal-800 underline underline-offset-4; }
+  .documentation ul { @apply my-4 list-disc space-y-2 pl-6; }
+  .documentation ol { @apply my-4 list-decimal space-y-2 pl-6; }
+  .documentation pre { @apply my-5 overflow-x-auto rounded-xl border border-stone-200 bg-white p-5 text-sm leading-6; }
+  .documentation code { @apply font-mono text-sm text-teal-950; }
+  .documentation table { @apply my-5 block overflow-x-auto rounded-xl border border-stone-200 bg-white text-sm; }
+  .documentation th, .documentation td { @apply border-b border-stone-200 px-4 py-3 text-left align-top; min-width: 140px; }
+}
+
+@layer components { .skip-link { position: absolute; top: -100px; left: 1rem; z-index: 50; padding: .75rem; background: white; } .skip-link:focus { top: 1rem; } }

@@ -1,0 +1,6 @@
+panel:
+  resource: ../src/Interface/Http/
+  type: attribute
+mcp:
+  resource: .
+  type: mcp

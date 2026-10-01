@@ -1,0 +1,8 @@
+services:
+  preview.ai:
+    class: App\Reply\Infrastructure\OpenAiDraftAi
+    public: true
+    arguments:
+      $apiKey: '%env(OPENAI_API_KEY)%'
+      $model: '%env(OPENAI_MODEL)%'
+      $maxDuration: 20

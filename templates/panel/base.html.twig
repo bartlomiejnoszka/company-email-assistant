@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="{{ app.request.locale }}">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>{% block title %}{{ 'Configuration'|trans }}{% endblock %} · {{ brand.name }}</title>
+  <link rel="stylesheet" href="/assets/panel.css">
+</head>
+<body class="bg-stone-50 text-slate-800 antialiased">
+  <a href="#main" class="skip-link">{{ 'Skip to content'|trans }}</a>
+  <header class="border-b border-stone-200 bg-white">
+    <div class="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-5 px-5 py-5 sm:px-8">
+      <a href="{{ path('panel_config') }}" class="flex items-center gap-3 font-semibold tracking-tight text-slate-950"><span class="flex h-10 w-10 items-center justify-center rounded-xl bg-teal-900 font-serif text-xl text-white" aria-hidden="true">E</span><span>{{ brand.name }}<span class="block text-xs font-normal tracking-normal text-slate-500">{{ 'Email assistant'|trans }}</span></span></a>
+      {% if is_granted('ROLE_OWNER') %}
+      <nav aria-label="{{ 'Navigation'|trans }}" class="flex flex-wrap items-center gap-1 text-sm">
+        {% for route, label in {'panel_config': 'Configuration', 'panel_guide': 'Owner guide', 'panel_docs': 'Reference'} %}
+          <a href="{{ path(route) }}" {{ app.request.attributes.get('_route') == route ? 'aria-current="page"' : '' }} class="rounded-lg px-3 py-2 {{ app.request.attributes.get('_route') == route ? 'bg-teal-50 font-semibold text-teal-900' : 'text-slate-600 hover:bg-stone-100' }}">{{ label|trans }}</a>
+        {% endfor %}
+        <form method="post" action="{{ path('owner_logout') }}"><input type="hidden" name="_csrf_token" value="{{ csrf_token('logout') }}"><button class="rounded-lg px-3 py-2 text-slate-600 hover:bg-stone-100">{{ 'Sign out'|trans }}</button></form>
+      </nav>
+      {% endif %}
+    </div>
+  </header>
+  <main id="main" class="mx-auto max-w-6xl px-5 py-10 sm:px-8 sm:py-12">{% block body %}{% endblock %}</main>
+  <footer class="mx-auto max-w-6xl border-t border-stone-200 px-5 py-6 text-xs leading-6 text-slate-500 sm:px-8">{{ 'Configuration changes apply to future processing. Existing drafts stay unchanged.'|trans }}</footer>
+</body>
+</html>
