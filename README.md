@@ -1,8 +1,66 @@
 # Company Email Assistant
 
-A self-hosted Symfony application that turns approved company knowledge into email drafts. Each installation serves one company and one mailbox. Staff review and send drafts from their mail client.
+[![CI](https://github.com/bartlomiejnoszka/company-email-assistant/actions/workflows/ci.yml/badge.svg)](https://github.com/bartlomiejnoszka/company-email-assistant/actions/workflows/ci.yml)
+[![PHP 8.4+](https://img.shields.io/badge/PHP-8.4%2B-777BB4?logo=php&logoColor=white)](composer.json)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-The app includes an authenticated Twig configuration panel, English and Polish interface translations, versioned YAML configuration, and an OAuth-protected MCP integration for configuration management and response previews. OpenAI is the initial AI adapter. Prices, conditions and signatures remain literal; unsupported enquiries require staff review.
+A self-hosted Symfony application that turns approved company knowledge into email drafts for staff review.
+
+Recurring customer enquiries often need the same facts, checklists and price conditions. Staff still need to understand the question, choose the relevant information and check the reply. This assistant matches enquiries to configured topics, proposes approved content blocks and saves validated drafts in the mailbox. Staff review and send them from their existing mail client. Unsupported or uncertain enquiries require manual handling.
+
+## What it does
+
+- Matches configured topics using keywords or AI-assisted semantic classification, then validates the proposed content references locally.
+- Preserves approved prices, complete conditions and signatures literally. Reply blocks are literal by default; optional mixed editing has additional guards and still requires review.
+- Provides an authenticated Twig configuration panel with English and Polish interfaces, complete-package validation, immutable YAML snapshots and stale-version checks.
+- Exposes OAuth-protected MCP tools for configuration management and response previews using the same application services as the panel and mailbox processing.
+- Tracks mailbox message identity and pending operations to avoid repeating draft creation after uncertain external writes.
+
+## How a reply becomes a draft
+
+```mermaid
+flowchart TD
+  Enquiry[Incoming enquiry] --> Rules{Configured manual rule?}
+  Rules -->|Yes| Manual[Staff handles enquiry]
+  Rules -->|No| Topics[Topic matching: keywords or AI]
+  Topics -->|Unsupported or uncertain| Manual
+  Topics -->|Matched| Content[Select approved content]
+  Content -->|No eligible content| Manual
+  Content -->|Available| Proposal[AI proposes content references]
+  Proposal --> Validation[Validate and render reply]
+  Validation -->|Manual or invalid result| Manual
+  Validation -->|Accepted| Draft[Save mailbox draft]
+  Draft --> Review[Staff reviews and sends]
+```
+
+This shows the default draft workflow. Configuration validation precedes mailbox access; recovery of interrupted operations is described in the [engineering walkthrough](docs/showcase.md#recovering-uncertain-mailbox-operations).
+
+## Fictional examples
+
+These scenarios use the [repair workshop configuration](examples/repair/company.yaml), which selects topics by keywords and keeps reply blocks literal. They demonstrate expected behaviour, not measured AI accuracy.
+
+| Enquiry | Expected behaviour |
+| --- | --- |
+| "What should I bring for a device repair?" | Matches the repair topic. A valid proposal can produce a draft containing the approved checklist: "Please bring the device and its purchase receipt." Staff review it before sending. |
+| "Do you offer parking?" | Matches no configured topic. Requires staff handling, with no generated draft. |
+| "I have a dispute about a repair." | The configured `dispute` rule requires staff handling before AI generation, with no generated draft. |
+
+See the [engineering walkthrough](docs/showcase.md) for the illustrative draft, implementation links and tests behind these boundaries.
+
+## Engineering decisions
+
+The application is a modular monolith with plain PHP domain rules, application services that coordinate ports, and infrastructure adapters for Symfony, YAML, SQLite, IMAP and OpenAI. Company-specific content stays in configuration. One installation uses the same response pipeline for mailbox drafts and MCP previews, and the same configuration service for panel and MCP edits.
+
+Read the [engineering walkthrough](docs/showcase.md), [architecture](docs/architecture.md) and [testing guide](docs/testing.md) for the design, failure handling and verification approach.
+
+## Limits and review boundaries
+
+- Each installation serves one company and one mailbox; multiple companies need isolated installations.
+- Staff must review drafts. Local validation and mixed-editing guards do not prove semantic correctness or price applicability.
+- Attachment contents and previous thread context are not interpreted. Messages with attachments are flagged for review.
+- OpenAI is the initial AI adapter. Enquiry text and relevant configuration content are sent to an external API; self-hosting the application does not make inference local.
+- Normal processing creates drafts. Automatic sending is an explicit, narrowly allowlisted test mode, described below.
+- SQLite, process locks and atomic snapshot activation require local shared storage for each installation.
 
 ## Requirements
 
